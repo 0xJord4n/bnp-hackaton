@@ -12,11 +12,11 @@ export default function SearchResults({ results }: SearchResultsProps) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 pb-12 flex flex-col gap-6">
-      <PerformanceCard spiderData={spiderData} />
       <div className="grid gap-6 md:grid-cols-2">
         <CompanyInfoCard companyInfo={companyInfo} />
         <SocialProfilesCard socials={socials} />
       </div>
+      <PerformanceCard spiderData={spiderData} />
     </div>
   );
 }
