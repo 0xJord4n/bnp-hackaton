@@ -18,6 +18,7 @@ export type HarmonicCompany = {
     id: string;
     name: string;
     description: string;
+    logo_url : string;
     website: HarmonicWebsite;
     location: HarmonicLocation;
     // Add other company fields as needed
@@ -38,3 +39,9 @@ export type HarmonicResponse<T> = {
     data: T | null;
     error: HarmonicError | null;
 };
+
+export interface SimilarCompaniesResponse {
+    count: number;
+    page_info: null;
+    results: string[];
+}
