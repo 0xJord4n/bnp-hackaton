@@ -6,7 +6,7 @@ interface CompanyInfoCardProps {
   companyInfo: CompanyInfo;
 }
 
-const bannedFields = ["logo_url"];
+const bannedFields = ["logo_url", "description", "name"];
 
 export function CompanyInfoCard({ companyInfo }: CompanyInfoCardProps) {
   return (

@@ -51,27 +51,23 @@ MemoizedRadarChart.displayName = "MemoizedRadarChart";
 
 export function PerformanceCard({ spiderData }: PerformanceCardProps) {
   return (
-    <Card className="bg-gray-900/50 border-gray-700 backdrop-blur-xl overflow-hidden group h-full flex flex-col">
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-      <CardHeader className="pb-2 text-center">
-        <CardTitle className="text-white text-xl md:text-2xl">
-          Company Performance
-        </CardTitle>
+    <Card className="bg-gray-900/50 border-gray-700 backdrop-blur-xl overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <CardHeader>
+        <CardTitle className="text-white">Company Performance</CardTitle>
       </CardHeader>
-      <CardContent className="relative z-10 flex-1 flex justify-center items-center">
-        <div className="w-full h-full">
-          <ChartContainer
-            config={{
-              value: {
-                label: "Value",
-                color: "hsl(var(--chart-1))",
-              },
-            }}
-            className="h-[300px] md:h-[350px]"
-          >
-            <MemoizedRadarChart data={spiderData} />
-          </ChartContainer>
-        </div>
+      <CardContent className="relative z-10">
+        <ChartContainer
+          config={{
+            value: {
+              label: "Value",
+              color: "hsl(var(--chart-1))",
+            },
+          }}
+          className="h-[300px]"
+        >
+          <MemoizedRadarChart data={spiderData} />
+        </ChartContainer>
       </CardContent>
     </Card>
   );

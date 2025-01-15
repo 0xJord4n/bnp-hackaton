@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LinkIcon } from "lucide-react";
 import { SocialProfile } from "../../api/search/route";
+import Link from "next/link";
 
 interface SocialProfilesCardProps {
   socials: SocialProfile[];
@@ -9,7 +10,7 @@ interface SocialProfilesCardProps {
 export function SocialProfilesCard({ socials }: SocialProfilesCardProps) {
   return (
     <Card className="bg-gray-900/50 border-gray-700 backdrop-blur-xl overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       <CardHeader>
         <CardTitle className="text-white">Social Profiles</CardTitle>
       </CardHeader>
@@ -21,7 +22,7 @@ export function SocialProfilesCard({ socials }: SocialProfilesCardProps) {
                 {profile.platform.charAt(0).toUpperCase() +
                   profile.platform.slice(1).toLowerCase()}
               </span>
-              <a
+              <Link
                 href={profile.url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -29,7 +30,7 @@ export function SocialProfilesCard({ socials }: SocialProfilesCardProps) {
               >
                 <LinkIcon className="w-4 h-4 mr-2" />
                 Visit
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

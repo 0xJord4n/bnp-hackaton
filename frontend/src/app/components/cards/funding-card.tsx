@@ -26,7 +26,7 @@ interface FundingCardProps {
 export function FundingCard({ funding }: FundingCardProps) {
   return (
     <Card className="bg-gray-900/50 border-gray-700 backdrop-blur-xl overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       <CardHeader>
         <CardTitle className="text-white">Funding Information</CardTitle>
       </CardHeader>
@@ -55,7 +55,7 @@ export function FundingCard({ funding }: FundingCardProps) {
               Last Funding Type:
             </dt>
             <dd className="w-1/2 text-white">
-              {formatFundingStage(funding.last_funding_type)}
+              {formatFundingStage(funding.last_funding_type) || "N/A"}
             </dd>
           </div>
           <div className="flex">
@@ -69,7 +69,7 @@ export function FundingCard({ funding }: FundingCardProps) {
           <div className="flex">
             <dt className="w-1/2 font-medium text-gray-400">Funding Stage:</dt>
             <dd className="w-1/2 text-white">
-              {formatFundingStage(funding.funding_stage)}
+              {formatFundingStage(funding.funding_stage) || "N/A"}
             </dd>
           </div>
         </dl>
