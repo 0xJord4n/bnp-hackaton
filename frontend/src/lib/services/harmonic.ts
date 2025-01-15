@@ -5,8 +5,7 @@ export const HARMONIC_CONFIG = {
     endpoint: "https://api.harmonic.ai/",
     headers: {
         accept: "application/json",
-        // apikey: process.env.HARMONIC_API_KEY || "",
-        apikey: "onKaXi9su8Zuo3xqYMYNYIf2xTh13oOm"
+        apikey: process.env.HARMONIC_API_KEY || "",
     },
 } as const;
 
