@@ -1,5 +1,6 @@
 import { harmonicService } from "@/lib/services/harmonic";
 import { HarmonicFounded, HarmonicFunding, HarmonicSocial } from "@/lib/types";
+import { formatFundingStage } from "@/lib/utils/format";
 import { NextResponse } from "next/server";
 
 export interface SocialProfile {
@@ -19,6 +20,7 @@ export interface CompanyInfo {
   location: string;
   industry: string;
   customer_type: string;
+  logo_url: string;
   employees: string | number;
   stage: string;
   founded: HarmonicFounded;
@@ -67,7 +69,8 @@ export async function GET(request: Request) {
       location: data.location?.address_formatted || "Location not available",
       industry: "Undefined", // This could be enhanced if Harmonic provides industry data
       founded: data.founded,
-      stage: data.stage || "Not available",
+      logo_url: data.logo_url,
+      stage: formatFundingStage(data.stage) || "Not available",
       customer_type: data.customer_type || "Not available",
       employees: data.headcount || "Not available", // This could be enhanced if Harmonic provides employee count
     };

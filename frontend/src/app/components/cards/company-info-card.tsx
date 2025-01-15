@@ -1,9 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CompanyInfo } from "../../api/search/route";
+import { formatCompanyInfoKey } from "@/lib/utils/format";
 
 interface CompanyInfoCardProps {
   companyInfo: CompanyInfo;
 }
+
+const bannedFields = ["logo_url"];
 
 export function CompanyInfoCard({ companyInfo }: CompanyInfoCardProps) {
   return (
@@ -14,14 +17,16 @@ export function CompanyInfoCard({ companyInfo }: CompanyInfoCardProps) {
       </CardHeader>
       <CardContent className="relative z-10">
         <dl className="space-y-2 text-sm">
-          {Object.entries(companyInfo).map(([key, value]) => (
-            <div key={key} className="flex">
-              <dt className="w-1/3 font-medium text-gray-400">
-                {key.charAt(0).toUpperCase() + key.slice(1)}:
-              </dt>
-              <dd className="w-2/3 text-white">{value}</dd>
-            </div>
-          ))}
+          {Object.entries(companyInfo)
+            .filter(([key]) => !bannedFields.includes(key))
+            .map(([key, value]) => (
+              <div key={key} className="flex">
+                <dt className="w-1/3 font-medium text-gray-400">
+                  {formatCompanyInfoKey(key)}:
+                </dt>
+                <dd className="w-2/3 text-white">{value}</dd>
+              </div>
+            ))}
         </dl>
       </CardContent>
     </Card>

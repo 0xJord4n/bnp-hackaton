@@ -18,16 +18,22 @@ interface PerformanceCardProps {
 const MemoizedRadarChart = React.memo(
   ({ data }: { data: SpiderDataPoint[] }) => (
     <ResponsiveContainer width="100%" height="100%">
-      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
+      <RadarChart
+        cx="50%"
+        cy="50%"
+        outerRadius="70%"
+        data={data}
+        margin={{ top: 10, right: 20, bottom: 10, left: 20 }}
+      >
         <PolarGrid stroke="rgba(255,255,255,0.2)" />
         <PolarAngleAxis
           dataKey="category"
           stroke="rgba(255,255,255,0.8)"
-          tick={{ fill: "rgba(255,255,255,0.8)" }}
+          tick={{ fill: "rgba(255,255,255,0.8)", fontSize: 12 }}
         />
         <PolarRadiusAxis
           stroke="rgba(255,255,255,0.2)"
-          tick={{ fill: "rgba(255,255,255,0.8)" }}
+          tick={{ fill: "rgba(255,255,255,0.8)", fontSize: 11 }}
         />
         <Radar
           name="Value"
@@ -45,23 +51,27 @@ MemoizedRadarChart.displayName = "MemoizedRadarChart";
 
 export function PerformanceCard({ spiderData }: PerformanceCardProps) {
   return (
-    <Card className="bg-gray-900/50 border-gray-700 backdrop-blur-xl overflow-hidden group">
+    <Card className="bg-gray-900/50 border-gray-700 backdrop-blur-xl overflow-hidden group h-full flex flex-col">
       <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-      <CardHeader>
-        <CardTitle className="text-white">Company Performance</CardTitle>
+      <CardHeader className="pb-2 text-center">
+        <CardTitle className="text-white text-xl md:text-2xl">
+          Company Performance
+        </CardTitle>
       </CardHeader>
-      <CardContent className="relative z-10">
-        <ChartContainer
-          config={{
-            value: {
-              label: "Value",
-              color: "hsl(var(--chart-1))",
-            },
-          }}
-          className="h-[300px]"
-        >
-          <MemoizedRadarChart data={spiderData} />
-        </ChartContainer>
+      <CardContent className="relative z-10 flex-1 flex justify-center items-center">
+        <div className="w-full h-full">
+          <ChartContainer
+            config={{
+              value: {
+                label: "Value",
+                color: "hsl(var(--chart-1))",
+              },
+            }}
+            className="h-[300px] md:h-[350px]"
+          >
+            <MemoizedRadarChart data={spiderData} />
+          </ChartContainer>
+        </div>
       </CardContent>
     </Card>
   );
