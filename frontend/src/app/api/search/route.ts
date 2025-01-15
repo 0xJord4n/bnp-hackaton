@@ -1,5 +1,5 @@
 import { harmonicService } from "@/lib/services/harmonic";
-import { HarmonicSocial } from "@/lib/types";
+import { HarmonicFounded, HarmonicFunding, HarmonicSocial } from "@/lib/types";
 import { NextResponse } from "next/server";
 
 export interface SocialProfile {
@@ -18,14 +18,17 @@ export interface CompanyInfo {
   website: string;
   location: string;
   industry: string;
-  socials: SocialProfile[];
+  customer_type: string;
   employees: string | number;
+  stage: string;
+  founded: HarmonicFounded;
 }
 
 export interface SearchResponse {
   companyInfo: CompanyInfo;
   spiderData: SpiderDataPoint[];
   socials: SocialProfile[];
+  funding: HarmonicFunding;
 }
 
 export async function GET(request: Request) {
@@ -57,12 +60,15 @@ export async function GET(request: Request) {
       );
     }
     // Transform Harmonic data to match the expected frontend format
-    const companyInfo = {
+    const companyInfo: CompanyInfo = {
       name: data.name,
       description: data.description || "Description not available",
       website: data.website?.url || url,
       location: data.location?.address_formatted || "Location not available",
-      industry: "Technology", // This could be enhanced if Harmonic provides industry data
+      industry: "Undefined", // This could be enhanced if Harmonic provides industry data
+      founded: data.founded,
+      stage: data.stage || "Not available",
+      customer_type: data.customer_type || "Not available",
       employees: data.headcount || "Not available", // This could be enhanced if Harmonic provides employee count
     };
 
@@ -83,6 +89,7 @@ export async function GET(request: Request) {
         platform: key,
         url: value.url,
       })),
+      funding: data.funding,
     });
   } catch (error) {
     console.error("Error fetching company data:", error);

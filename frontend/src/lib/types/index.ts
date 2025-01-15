@@ -23,7 +23,31 @@ export type HarmonicCompany = {
   website: HarmonicWebsite;
   location: HarmonicLocation;
   socials: { [key: string]: HarmonicSocial };
+  funding: HarmonicFunding;
+  founded: HarmonicFounded;
+  customer_type: string;
+  stage: string;
   // Add other company fields as needed
+};
+
+export type HarmonicInvestor = {
+  entity_urn: string;
+  name: string;
+};
+
+export type HarmonicFounded = {
+  date: string;
+  granularity: "YEAR" | "MONTH" | "DAY";
+};
+
+export type HarmonicFunding = {
+  funding_total: number;
+  num_funding_rounds: number;
+  investors: HarmonicInvestor[];
+  last_funding_at: string;
+  last_funding_type: string;
+  last_funding_total: number;
+  funding_stage: string;
 };
 
 export type HarmonicSocial = {
