@@ -1,11 +1,12 @@
-import { HarmonicCompany, HarmonicError, HarmonicResponse } from "../types";
+import { HarmonicCompany, HarmonicError, HarmonicResponse, SimilarCompaniesResponse } from "../types";
 
 
 export const HARMONIC_CONFIG = {
     endpoint: "https://api.harmonic.ai/",
     headers: {
         accept: "application/json",
-        apikey: process.env.HARMONIC_API_KEY || "",
+        // apikey: process.env.HARMONIC_API_KEY || "",
+        apikey: "onKaXi9su8Zuo3xqYMYNYIf2xTh13oOm"
     },
 } as const;
 
@@ -65,8 +66,8 @@ class HarmonicService {
     async getSimilarCompanies(
         compId: string,
         size: number = 5
-    ): Promise<HarmonicResponse<HarmonicCompany[]>> {
-        return this.handleRequest<HarmonicCompany[]>(
+    ): Promise<HarmonicResponse<SimilarCompaniesResponse>> {
+        return this.handleRequest<SimilarCompaniesResponse>(
             `${this.endpoint}/search/similar_companies/${compId}?size=${size}`
         );
     }
