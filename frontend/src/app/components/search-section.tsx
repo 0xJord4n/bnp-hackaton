@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,91 +9,64 @@ import { cn } from "@/lib/utils";
 import SearchResults from "./search-results";
 import Navbar from "./navbar";
 import AnimatedBackground from "./animated-background";
-import confetti from "canvas-confetti";
 
 export default function SearchSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState(searchParams.get("url") || "");
   const [isLoading, setIsLoading] = useState(false);
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [searchResults, setSearchResults] = useState(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const queryUrl = searchParams.get("url");
-    if (queryUrl) {
-      setUrl(queryUrl);
-      handleSearch(queryUrl);
-    }
-  }, [searchParams]);
+  const MemoizedSearchResults = useMemo(() => SearchResults, []);
 
-  const handleSearch = async (searchUrl: string) => {
-    if (!searchUrl) return;
+  const handleSearch = useCallback(
+    async (searchUrl: string) => {
+      if (!searchUrl) return;
 
-    setIsLoading(true);
-    setError("");
+      setIsLoading(true);
+      setError("");
 
-    try {
-      const [data] = await Promise.all([
-        fetch(`/api/search?url=${encodeURIComponent(searchUrl)}`).then(
-          (response) => {
-            if (!response.ok) {
-              throw new Error("Failed to fetch data");
+      try {
+        const [data] = await Promise.all([
+          fetch(`/api/search?url=${encodeURIComponent(searchUrl)}`).then(
+            (response) => {
+              if (!response.ok) {
+                throw new Error("Failed to fetch data");
+              }
+              return response.json();
             }
-            return response.json();
-          }
-        ),
-        new Promise((resolve) => setTimeout(resolve, 500)), // Ensure minimum 500ms loading time
-      ]);
+          ),
+          new Promise((resolve) => setTimeout(resolve, 500)), // Ensure minimum 500ms loading time
+        ]);
 
-      setSearchResults(data);
-      setSearchPerformed(true);
-
-      const scalar = 3;
-      const unicorn = confetti.shapeFromText({ text: "🦄", scalar });
-
-      const defaults = {
-        spread: 360,
-        ticks: 80,
-        gravity: 0.3,
-        decay: 0.97,
-        startVelocity: 15,
-        shapes: [unicorn],
-        scalar,
-      };
-
-      const shoot = () => {
-        confetti({
-          ...defaults,
-          particleCount: 10,
+        setSearchResults(data);
+        setSearchPerformed(true);
+        router.push(`/?url=${encodeURIComponent(searchUrl)}`, {
+          scroll: false,
         });
-      };
+      } catch (err) {
+        setError("An error occurred while fetching data. Please try again.");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [router]
+  );
 
-      setTimeout(shoot, 0);
-      setTimeout(shoot, 150);
-      setTimeout(shoot, 300);
-
-      router.push(`/?url=${encodeURIComponent(searchUrl)}`);
-    } catch (err) {
-      setError("An error occurred while fetching data. Please try again.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSearch(url);
-  };
-
-  const handleLogoClick = () => {
+  const handleLogoClick = useCallback(() => {
     setUrl("");
     setSearchPerformed(false);
     setSearchResults(null);
     setError("");
-    router.push("/");
+    router.push("/", { scroll: false });
+  }, [router]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSearch(url);
   };
 
   return (
@@ -166,7 +139,7 @@ export default function SearchSection() {
           )}
         </div>
         {searchPerformed && searchResults && (
-          <SearchResults results={searchResults} />
+          <MemoizedSearchResults results={searchResults} />
         )}
       </div>
     </div>

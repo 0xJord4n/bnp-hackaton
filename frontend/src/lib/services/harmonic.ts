@@ -1,77 +1,81 @@
+import "server-only";
 import { HarmonicCompany, HarmonicError, HarmonicResponse } from "../types";
 
-
 export const HARMONIC_CONFIG = {
-    endpoint: "https://api.harmonic.ai/",
-    headers: {
-        accept: "application/json",
-        apikey: process.env.HARMONIC_API_KEY || "",
-    },
+  endpoint: "https://api.harmonic.ai/",
+  headers: {
+    accept: "application/json",
+    apikey: process.env.HARMONIC_API_KEY || "",
+  },
 } as const;
 
-
 class HarmonicService {
-    private endpoint: string;
-    private headers: HeadersInit;
+  private endpoint: string;
+  private headers: HeadersInit;
 
-    constructor() {
-        this.endpoint = HARMONIC_CONFIG.endpoint;
-        this.headers = HARMONIC_CONFIG.headers;
+  constructor() {
+    this.endpoint = HARMONIC_CONFIG.endpoint;
+    this.headers = HARMONIC_CONFIG.headers;
+  }
+
+  private async handleRequest<T>(
+    url: string,
+    options: RequestInit = {}
+  ): Promise<HarmonicResponse<T>> {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: this.headers,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        const error: HarmonicError = {
+          message: errorText,
+          status: response.status,
+        };
+        return { data: null, error };
+      }
+
+      const data = await response.json();
+      return { data, error: null };
+    } catch (error) {
+      const harmonicError: HarmonicError = {
+        message: "An unexpected error occurred",
+        status: 500,
+        error,
+      };
+      return { data: null, error: harmonicError };
     }
+  }
 
-    private async handleRequest<T>(
-        url: string,
-        options: RequestInit = {}
-    ): Promise<HarmonicResponse<T>> {
-        try {
-            const response = await fetch(url, {
-                ...options,
-                headers: this.headers,
-            });
+  async getCompanyByUrl(
+    url: string
+  ): Promise<HarmonicResponse<HarmonicCompany>> {
+    return this.handleRequest<HarmonicCompany>(
+      `${this.endpoint}companies?website_domain=${url}`,
+      { method: "POST" }
+    );
+  }
 
-            if (!response.ok) {
-                const error: HarmonicError = {
-                    message: `API request failed with status ${response.status}`,
-                    status: response.status,
-                };
-                return { data: null, error };
-            }
+  async getCompanyById(
+    urn: string
+  ): Promise<HarmonicResponse<HarmonicCompany>> {
+    return this.handleRequest<HarmonicCompany>(
+      `${this.endpoint}/companies/${urn}`
+    );
+  }
 
-            const data = await response.json();
-            return { data, error: null };
-        } catch (error) {
-            const harmonicError: HarmonicError = {
-                message: 'An unexpected error occurred',
-                status: 500,
-                error,
-            };
-            return { data: null, error: harmonicError };
-        }
-    }
+  async getSimilarCompanies(
+    compId: string,
+    size: number = 5
+  ): Promise<HarmonicResponse<HarmonicCompany[]>> {
+    return this.handleRequest<HarmonicCompany[]>(
+      `${this.endpoint}/search/similar_companies/${compId}?size=${size}`
+    );
+  }
 
-    async getCompanyByUrl(url: string): Promise<HarmonicResponse<HarmonicCompany>> {
-        return this.handleRequest<HarmonicCompany>(
-            `${this.endpoint}companies?website_domain=${url}`,
-            { method: 'POST' }
-        );
-    }
-
-    async getCompanyById(urn: string): Promise<HarmonicResponse<HarmonicCompany>> {
-        return this.handleRequest<HarmonicCompany>(
-            `${this.endpoint}/companies/${urn}`
-        );
-    }
-
-    async getSimilarCompanies(
-        compId: string,
-        size: number = 5
-    ): Promise<HarmonicResponse<HarmonicCompany[]>> {
-        return this.handleRequest<HarmonicCompany[]>(
-            `${this.endpoint}/search/similar_companies/${compId}?size=${size}`
-        );
-    }
-
-    // Add more methods as needed...
+  // Add more methods as needed...
 }
 
 export const harmonicService = new HarmonicService();
