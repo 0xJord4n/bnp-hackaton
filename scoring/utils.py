@@ -98,6 +98,17 @@ def quantitativeDataScoring(companies_data, list_of_companies):
       final_data[i][f"scaled_{key}"] = scores[i]
   return final_data
 
+def get_growth_avg(final_data):
+  for company in final_data:
+    growth_score = 0
+    n = 0
+    for key in company.keys():
+      if "growth" in key:
+        n+=1
+        growth_score += company[key]
+    company["growth_score"] = growth_score / n
+  return final_data
+
 def get_market_average(final_data):
   market_avg = {}
   for key in list(final_data[0].keys()).copy():
@@ -116,6 +127,7 @@ def main():
     companies_data = getQuantitativeData(raw_data)
     list_of_companies = [raw_data["main_company"]["website_domain"]]+[elem["website_domain"] for elem in raw_data["similar_companies"]]
     final_data = quantitativeDataScoring(companies_data, list_of_companies)
+    final_data = get_growth_avg(final_data)
     scores = newsEventsScoring(list_of_companies)
     for i, company in enumerate(list_of_companies):
         final_data[i]["news_score"] = scores[i]
