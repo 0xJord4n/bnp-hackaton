@@ -71,6 +71,9 @@ interface CompetitorResponse {
   website_url?: string;
   address_formatted?: string;
   funding_total?: number;
+  linkedin_followers_history?: Array<{ date: string; value: number }>;
+  headcount_history?: Array<{ date: string; value: number }>;
+  web_traffic_history?: Array<{ date: string; value: number }>;
 }
 
 export async function GET(request: Request) {
@@ -93,7 +96,7 @@ export async function GET(request: Request) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ domain: "https://"+url  }),
+        body: JSON.stringify({ domain: "https://" + url }),
       }
     );
     const mainCompanyData = await mainCompanyResponse.json();
@@ -106,12 +109,12 @@ export async function GET(request: Request) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ domain: "https://"+url  }),
+        body: JSON.stringify({ domain: "https://" + url }),
       }
     );
     const competitorsList = await competitorsResponse.json();
 
-    console.log(competitorsList)
+    console.log(competitorsList);
     // Get scoring data
     const scoringResponse = await fetch(
       "http://localhost:8000/competitors/scoring/",
@@ -120,7 +123,7 @@ export async function GET(request: Request) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ domain: "https://"+url }),
+        body: JSON.stringify({ domain: "https://" + url }),
       }
     );
     const scoringData = await scoringResponse.json();
@@ -196,6 +199,21 @@ export async function GET(request: Request) {
         name: companyInfo.name,
         location: companyInfo.location,
         funding: mainCompanyData.funding_total || 0,
+        followers:
+          mainCompanyData.linkedin_followers_history?.map((entry: any) => ({
+            date: entry.date.split("T")[0],
+            value: entry.value,
+          })) || [],
+        headcount:
+          mainCompanyData.headcount_history?.map((entry: any) => ({
+            date: entry.date.split("T")[0],
+            value: entry.value,
+          })) || [],
+        traffic:
+          mainCompanyData.web_traffic_history?.map((entry: any) => ({
+            date: entry.date.split("T")[0],
+            value: entry.value,
+          })) || [],
         color: "hsl(var(--chart-1))", // Main company uses primary chart color
       },
       ...competitorsList
@@ -204,6 +222,21 @@ export async function GET(request: Request) {
           name: competitor.name,
           location: competitor.address_formatted || "Global",
           funding: competitor.funding_total || 0,
+          followers:
+            competitor.linkedin_followers_history?.map((entry: any) => ({
+              date: entry.date.split("T")[0],
+              value: entry.value,
+            })) || [],
+          headcount:
+            competitor.headcount_history?.map((entry: any) => ({
+              date: entry.date.split("T")[0],
+              value: entry.value,
+            })) || [],
+          traffic:
+            competitor.web_traffic_history?.map((entry: any) => ({
+              date: entry.date.split("T")[0],
+              value: entry.value,
+            })) || [],
           color: `hsl(${120 + index * 60}, 70%, 50%)`, // Generate distinct colors
         })),
     ];
