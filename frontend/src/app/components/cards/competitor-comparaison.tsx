@@ -284,22 +284,6 @@ export default function CompetitorComparison({
               "Monthly Website Visitors"
             )}
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-2">
-              Market Share
-            </h3>
-            {renderLineChart(
-              "marketShare",
-              formatPercentage,
-              "Market Share (%)"
-            )}
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-2">
-              Growth Rate
-            </h3>
-            {renderLineChart("growthRate", formatPercentage, "Growth Rate (%)")}
-          </div>
         </div>
       </CardContent>
     </Card>
