@@ -1,38 +1,47 @@
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LinkIcon, Share2 } from "lucide-react";
-import { SocialProfile } from "../../api/search/route";
+import { Users, LinkIcon } from "lucide-react";
 import Link from "next/link";
 
-interface SocialProfilesCardProps {
-  socials: SocialProfile[];
+interface Competitor {
+  name: string;
+  website: string;
 }
 
-export function SocialProfilesCard({ socials }: SocialProfilesCardProps) {
+interface CompetitorsCardProps {
+  competitors: Competitor[];
+}
+
+export function CompetitorsCard({ competitors }: CompetitorsCardProps) {
+  if (!competitors || competitors.length === 0) return null;
+
   return (
     <Card className="bg-gray-900/50 border-gray-700 backdrop-blur-xl overflow-hidden group">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       <CardHeader>
         <CardTitle className="text-white flex items-center">
-          <Share2 className="w-5 h-5 mr-2" />
-          Social Profiles
+          <Users className="w-5 h-5 mr-2" />
+          Competitors
         </CardTitle>
       </CardHeader>
       <CardContent className="relative z-10">
         <ul className="space-y-2">
-          {socials.map((profile) => (
-            <li key={profile.platform} className="flex items-center">
-              <span className="w-2/3 font-medium text-gray-400">
-                {profile.platform.charAt(0).toUpperCase() +
-                  profile.platform.slice(1).toLowerCase()}
+          {competitors.map((competitor) => (
+            <li
+              key={competitor.name}
+              className="flex items-center justify-between"
+            >
+              <span className="font-medium text-gray-400">
+                {competitor.name}
               </span>
               <Link
-                href={profile.url}
+                href={competitor.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-1/3 text-white hover:text-purple-400 transition-colors flex items-center justify-end"
+                className="text-white hover:text-purple-400 transition-colors flex items-center"
               >
                 <LinkIcon className="w-4 h-4 mr-2" />
-                Visit
+                Website
               </Link>
             </li>
           ))}
