@@ -71,9 +71,9 @@ interface CompetitorResponse {
   website_url?: string;
   address_formatted?: string;
   funding_total?: number;
-  linkedin_followers_history?: Array<{ date: string; value: number }>;
-  headcount_history?: Array<{ date: string; value: number }>;
-  web_traffic_history?: Array<{ date: string; value: number }>;
+  linkedin_metrics?: Array<{ timestamp: string; metric_value: number }>;
+  headcount_metrics?: Array<{ timestamp: string; metric_value: number }>;
+  web_traffic_metrics?: Array<{ timestamp: string; metric_value: number }>;
 }
 
 export async function GET(request: Request) {
@@ -223,19 +223,19 @@ export async function GET(request: Request) {
           location: competitor.address_formatted || "Global",
           funding: competitor.funding_total || 0,
           followers:
-            competitor.linkedin_followers_history?.map((entry: any) => ({
-              date: entry.date.split("T")[0],
-              value: entry.value,
+            competitor.linkedin_metrics?.map((entry: any) => ({
+              date: entry.timestamp.split("T")[0],
+              value: entry.metric_value,
             })) || [],
           headcount:
-            competitor.headcount_history?.map((entry: any) => ({
-              date: entry.date.split("T")[0],
-              value: entry.value,
+            competitor.headcount_metrics?.map((entry: any) => ({
+              date: entry.timestamp.split("T")[0],
+              value: entry.metric_value,
             })) || [],
           traffic:
-            competitor.web_traffic_history?.map((entry: any) => ({
-              date: entry.date.split("T")[0],
-              value: entry.value,
+            competitor.web_traffic_metrics?.map((entry: any) => ({
+              date: entry.timestamp.split("T")[0],
+              value: entry.metric_value,
             })) || [],
           color: `hsl(${120 + index * 60}, 70%, 50%)`, // Generate distinct colors
         })),
