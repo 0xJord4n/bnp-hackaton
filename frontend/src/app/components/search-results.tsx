@@ -2,9 +2,7 @@ import { SearchResponse } from "../api/search/route";
 import { PerformanceCard } from "./cards/performance-card";
 import { CompanyInfoCard } from "./cards/company-info-card";
 import { FundingCard } from "./cards/funding-card";
-import { CompetitorsCard } from "./cards/competitors-card";
 import { MarketInsightsCard } from "./cards/market-insights-card";
-import { MarketInformationCard } from "./cards/market-information-card";
 import { ExportButton } from "./export-button";
 import CompetitorComparison from "./cards/competitor-comparaison";
 

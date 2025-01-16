@@ -7,22 +7,12 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  BarChart,
-  Bar,
-  Cell,
-} from "recharts";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis } from "recharts";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Link } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface TimeSeriesData {
@@ -114,7 +104,7 @@ export default function CompetitorComparison({
   const renderLineChart = (
     dataKey: string,
     yAxisFormatter: (value: number) => string,
-    label: string
+    title?: string
   ) => {
     const chartData =
       (data[0][dataKey as keyof CompetitorData] as TimeSeriesData[]) || [];

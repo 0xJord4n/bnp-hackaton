@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Globe } from "lucide-react";
 
 interface NavbarProps {

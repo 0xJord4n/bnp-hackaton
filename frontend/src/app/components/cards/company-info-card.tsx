@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { HarmonicFounded } from "@/lib/types";
 
 interface CompanyInfoCardProps {
   companyInfo: CompanyInfo;
@@ -20,12 +21,50 @@ interface CompanyInfoCardProps {
 
 const bannedFields = ["logo_url", "description", "name"];
 
+// @ts-ignore
 const socialIcons: { [key: string]: any } = {
   github: Github,
   linkedin: Linkedin,
   twitter: Twitter,
   facebook: Facebook,
   instagram: Instagram,
+};
+
+const formatFoundedDate = (founded: HarmonicFounded | string) => {
+  if (typeof founded === "string") return founded;
+
+  const { date, granularity } = founded;
+  const [year, month, day] = date.split("-");
+
+  switch (granularity) {
+    case "YEAR":
+      return year;
+    case "MONTH":
+      return `${
+        [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ][parseInt(month) - 1]
+      } ${year}`;
+    case "DAY":
+      return new Date(date).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+        day: "numeric",
+      });
+    default:
+      return date;
+  }
 };
 
 export function CompanyInfoCard({
@@ -94,7 +133,9 @@ export function CompanyInfoCard({
                 <dt className="w-1/3 font-medium text-gray-400">
                   {formatCompanyInfoKey(key)}:
                 </dt>
-                <dd className="w-2/3 text-white">{value}</dd>
+                <dd className="w-2/3 text-white">
+                  {key === "founded" ? formatFoundedDate(value) : value}
+                </dd>
               </div>
             ))}
         </dl>

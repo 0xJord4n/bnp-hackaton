@@ -65,6 +65,7 @@ export type HarmonicHeaders = {
 export type HarmonicError = {
   message: string;
   status: number;
+  // @ts-nocheck
   error?: any;
 };
 
