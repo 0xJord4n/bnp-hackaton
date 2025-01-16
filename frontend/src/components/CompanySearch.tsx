@@ -31,7 +31,7 @@ export default function CompanySearch({ onCompanySelect }: CompanySearchProps) {
       }
       setCompany(result.data);
       onCompanySelect(result.data.id);
-    } catch (err) {
+    } catch {
       setError("Failed to fetch company data");
     } finally {
       setLoading(false);

@@ -1,5 +1,4 @@
-import { harmonicService } from "@/lib/services/harmonic";
-import { HarmonicFounded, HarmonicFunding, HarmonicSocial } from "@/lib/types";
+import { HarmonicFounded, HarmonicFunding } from "@/lib/types";
 import { formatFundingStage } from "@/lib/utils/format";
 import { NextResponse } from "next/server";
 
@@ -65,6 +64,13 @@ export interface SearchResponse {
   competitors: Competitor[];
   marketInfo: MarketInfo;
   competitorComparison: CompetitorData[];
+}
+
+interface CompetitorResponse {
+  name: string;
+  website_url?: string;
+  address_formatted?: string;
+  funding_total?: number;
 }
 
 export async function GET(request: Request) {
@@ -137,10 +143,12 @@ export async function GET(request: Request) {
     };
 
     // Transform competitors data
-    const competitors: Competitor[] = competitorsList.map((comp: any) => ({
-      name: comp.name,
-      website: comp.website_url || "",
-    }));
+    const competitors: Competitor[] = competitorsList.map(
+      (comp: CompetitorResponse) => ({
+        name: comp.name,
+        website: comp.website_url || "",
+      })
+    );
 
     // Transform spider data from scoring
     const spiderData: SpiderDataPoint[] = [
@@ -189,12 +197,14 @@ export async function GET(request: Request) {
         funding: mainCompanyData.funding_total || 0,
         color: "hsl(var(--chart-1))", // Main company uses primary chart color
       },
-      ...competitorsList.slice(0, 4).map((competitor: any, index: number) => ({
-        name: competitor.name,
-        location: competitor.address_formatted || "Global",
-        funding: competitor.funding_total || 0,
-        color: `hsl(${120 + index * 60}, 70%, 50%)`, // Generate distinct colors
-      })),
+      ...competitorsList
+        .slice(0, 4)
+        .map((competitor: CompetitorResponse, index: number) => ({
+          name: competitor.name,
+          location: competitor.address_formatted || "Global",
+          funding: competitor.funding_total || 0,
+          color: `hsl(${120 + index * 60}, 70%, 50%)`, // Generate distinct colors
+        })),
     ];
 
     // Fetch market insights from Perplexity API

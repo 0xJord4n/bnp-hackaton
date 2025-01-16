@@ -1,14 +1,17 @@
-'use client';
+"use client";
 
-import { HarmonicCompany } from '@/lib/types';
-import { useState, useEffect } from 'react';
+import { HarmonicCompany } from "@/lib/types";
+import { useState, useEffect } from "react";
 
 interface SimilarCompaniesProps {
   companyId: string;
   itemCount?: number;
 }
 
-export default function SimilarCompanies({ companyId, itemCount = 5 }: SimilarCompaniesProps) {
+export default function SimilarCompanies({
+  companyId,
+  itemCount = 5,
+}: SimilarCompaniesProps) {
   const [companies, setCompanies] = useState<HarmonicCompany[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,18 +23,20 @@ export default function SimilarCompanies({ companyId, itemCount = 5 }: SimilarCo
       try {
         setLoading(true);
         setError(null);
-        
-        const response = await fetch(`/api/companies/similar?id=${companyId}&size=${itemCount}`);
+
+        const response = await fetch(
+          `/api/companies/similar?id=${companyId}&size=${itemCount}`
+        );
         const result = await response.json();
-        
+
         if (result.error) {
           setError(result.error);
           return;
         }
-        
+
         setCompanies(result.data);
-      } catch (err) {
-        setError('Failed to fetch similar companies');
+      } catch {
+        setError("Failed to fetch similar companies");
       } finally {
         setLoading(false);
       }
@@ -53,14 +58,14 @@ export default function SimilarCompanies({ companyId, itemCount = 5 }: SimilarCo
       <h2 className="text-xl font-semibold">Similar Companies</h2>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {companies.map((company) => (
-          <div 
-            key={company.id} 
+          <div
+            key={company.id}
             className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex items-center gap-4">
               {company.logo_url ? (
-                <img 
-                  src={company.logo_url} 
+                <img
+                  src={company.logo_url}
                   alt={`${company.name} logo`}
                   className="w-12 h-12 object-contain"
                 />
