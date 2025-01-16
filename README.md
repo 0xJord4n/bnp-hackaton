@@ -45,6 +45,9 @@ Then you can do:
 - npm install
 - npm run dev
 
+
+### Endpoints
+
 Main Company Information
 URL: /main/
 Method: POST
