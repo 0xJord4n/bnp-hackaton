@@ -200,20 +200,35 @@ export async function GET(request: Request) {
         location: companyInfo.location,
         funding: mainCompanyData.funding_total || 0,
         followers:
-          mainCompanyData.linkedin_metrics?.map((entry: any) => ({
-            date: entry.timestamp.split("T")[0],
-            value: entry.metric_value,
-          })) || [],
+          mainCompanyData.linkedin_metrics
+            ?.map((entry: any) => ({
+              date: entry.timestamp.split("T")[0],
+              value: entry.metric_value,
+            }))
+            .sort(
+              (a: CompetitorTimeSeriesData, b: CompetitorTimeSeriesData) =>
+                new Date(a.date).getTime() - new Date(b.date).getTime()
+            ) || [],
         headcount:
-          mainCompanyData.headcount_metrics?.map((entry: any) => ({
-            date: entry.timestamp.split("T")[0],
-            value: entry.metric_value,
-          })) || [],
+          mainCompanyData.headcount_metrics
+            ?.map((entry: any) => ({
+              date: entry.timestamp.split("T")[0],
+              value: entry.metric_value,
+            }))
+            .sort(
+              (a: CompetitorTimeSeriesData, b: CompetitorTimeSeriesData) =>
+                new Date(a.date).getTime() - new Date(b.date).getTime()
+            ) || [],
         traffic:
-          mainCompanyData.web_traffic_metrics?.map((entry: any) => ({
-            date: entry.timestamp.split("T")[0],
-            value: entry.metric_value,
-          })) || [],
+          mainCompanyData.web_traffic_metrics
+            ?.map((entry: any) => ({
+              date: entry.timestamp.split("T")[0],
+              value: entry.metric_value,
+            }))
+            .sort(
+              (a: CompetitorTimeSeriesData, b: CompetitorTimeSeriesData) =>
+                new Date(a.date).getTime() - new Date(b.date).getTime()
+            ) || [],
         color: "hsl(var(--chart-1))", // Main company uses primary chart color
       },
       ...competitorsList
@@ -223,20 +238,35 @@ export async function GET(request: Request) {
           location: competitor.address_formatted || "Global",
           funding: competitor.funding_total || 0,
           followers:
-            competitor.linkedin_metrics?.map((entry: any) => ({
-              date: entry.timestamp.split("T")[0],
-              value: entry.metric_value,
-            })) || [],
+            competitor.linkedin_metrics
+              ?.map((entry: any) => ({
+                date: entry.timestamp.split("T")[0],
+                value: entry.metric_value,
+              }))
+              .sort(
+                (a: CompetitorTimeSeriesData, b: CompetitorTimeSeriesData) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime()
+              ) || [],
           headcount:
-            competitor.headcount_metrics?.map((entry: any) => ({
-              date: entry.timestamp.split("T")[0],
-              value: entry.metric_value,
-            })) || [],
+            competitor.headcount_metrics
+              ?.map((entry: any) => ({
+                date: entry.timestamp.split("T")[0],
+                value: entry.metric_value,
+              }))
+              .sort(
+                (a: CompetitorTimeSeriesData, b: CompetitorTimeSeriesData) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime()
+              ) || [],
           traffic:
-            competitor.web_traffic_metrics?.map((entry: any) => ({
-              date: entry.timestamp.split("T")[0],
-              value: entry.metric_value,
-            })) || [],
+            competitor.web_traffic_metrics
+              ?.map((entry: any) => ({
+                date: entry.timestamp.split("T")[0],
+                value: entry.metric_value,
+              }))
+              .sort(
+                (a: CompetitorTimeSeriesData, b: CompetitorTimeSeriesData) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime()
+              ) || [],
           color: `hsl(${120 + index * 60}, 70%, 50%)`, // Generate distinct colors
         })),
     ];
