@@ -10,31 +10,6 @@ The tool includes a Next.js frontend and a Django backend.
 - REST API endpoints for integration into VC workflows.
 - Frontend UI for streamlined insights.
 
-## Project Structure
-root/
-├── backend/                # Django backend
-│   ├── backend/            # Project configuration
-│   │   ├── settings.py     # Django settings
-│   │   ├── urls.py         # Project-level URL configuration
-│   │   └── wsgi.py         # WSGI application
-│   ├── competitors/        # Competitor analysis app
-│   │   ├── serializers.py  # Request validation
-│   │   ├── views.py        # API views
-│   │   ├── utils/          # Core logic
-│   │   │   ├── harmonic_api.py
-│   │   │   ├── data_processing.py
-│   │   │   ├── scoring_companies.py
-│   │   │   └── similarity_prompt.py
-│   └── manage.py           # Django management script
-├── frontend/               # Next.js frontend
-│   ├── pages/              # Application pages
-│   ├── components/         # UI components
-│   └── public/             # Static files
-├── .env                    # Environment variables
-├── requirements.txt        # Backend dependencies
-├── package.json            # Frontend dependencies
-└── README.md               # Project documentation
-
 # Getting Started
 
 ## 1. Prerequisites
