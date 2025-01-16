@@ -39,8 +39,11 @@ It will create a Docker image and launch the Docker container so that you can th
 Navigate to the frontend directory:
 cd ../frontend
 Create a .env file in the frontend directory and add:
-
 PERPLEXITY_API_KEY="your_perplexity_api_key"
+
+Then you can do: 
+- npm install
+- npm run dev
 
 Main Company Information
 URL: /main/
