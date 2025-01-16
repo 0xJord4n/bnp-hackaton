@@ -200,19 +200,19 @@ export async function GET(request: Request) {
         location: companyInfo.location,
         funding: mainCompanyData.funding_total || 0,
         followers:
-          mainCompanyData.linkedin_followers_history?.map((entry: any) => ({
-            date: entry.date.split("T")[0],
-            value: entry.value,
+          mainCompanyData.linkedin_metrics?.map((entry: any) => ({
+            date: entry.timestamp.split("T")[0],
+            value: entry.metric_value,
           })) || [],
         headcount:
-          mainCompanyData.headcount_history?.map((entry: any) => ({
-            date: entry.date.split("T")[0],
-            value: entry.value,
+          mainCompanyData.headcount_metrics?.map((entry: any) => ({
+            date: entry.timestamp.split("T")[0],
+            value: entry.metric_value,
           })) || [],
         traffic:
-          mainCompanyData.web_traffic_history?.map((entry: any) => ({
-            date: entry.date.split("T")[0],
-            value: entry.value,
+          mainCompanyData.web_traffic_metrics?.map((entry: any) => ({
+            date: entry.timestamp.split("T")[0],
+            value: entry.metric_value,
           })) || [],
         color: "hsl(var(--chart-1))", // Main company uses primary chart color
       },
