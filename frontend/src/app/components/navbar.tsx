@@ -15,7 +15,7 @@ export default function Navbar({ onLogoClick }: NavbarProps) {
               <div className="absolute inset-0 bg-purple-500 rounded-full blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
             </div>
             <span className="ml-2 text-white text-lg font-semibold group-hover:text-purple-300 transition-colors">
-              CompanyLookup
+              VCLens
             </span>
           </button>
         </div>
