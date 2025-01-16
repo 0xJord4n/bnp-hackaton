@@ -79,139 +79,122 @@ export async function GET(request: Request) {
   }
 
   try {
-    const { data, error } = await harmonicService.getCompanyByUrl(url);
+    // Get main company data
+    const mainCompanyResponse = await fetch(
+      "http://localhost:8000/competitors/main/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ domain: url }),
+      }
+    );
+    const mainCompanyData = await mainCompanyResponse.json();
 
-    if (error) {
-      console.error("Error fetching company data:", error);
-      return NextResponse.json(
-        { error: error.message },
-        { status: error.status }
-      );
-    }
+    // Get competitors list
+    const competitorsResponse = await fetch(
+      "http://localhost:8000/competitors/list/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ domain: url }),
+      }
+    );
+    const competitorsList = await competitorsResponse.json();
 
-    if (!data) {
-      return NextResponse.json(
-        { error: "No company data found" },
-        { status: 404 }
-      );
-    }
+    // Get scoring data
+    const scoringResponse = await fetch(
+      "http://localhost:8000/competitors/scoring/",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ domain: url }),
+      }
+    );
+    const scoringData = await scoringResponse.json();
 
-    // Transform Harmonic data to match the expected frontend format
+    // Transform main company data to match CompanyInfo interface
     const companyInfo: CompanyInfo = {
-      name: data.name,
-      description: data.description || "Description not available",
-      website: data.website?.url || url,
-      location: data.location?.address_formatted || "Location not available",
-      industry: "Undefined", // This could be enhanced if Harmonic provides industry data
-      founded: data.founded,
-      logo_url: data.logo_url,
-      stage: formatFundingStage(data.stage) || "Not available",
-      customer_type: data.customer_type || "Not available",
-      employees: data.headcount || "Not available",
+      name: mainCompanyData.name,
+      description: mainCompanyData.description || "Description not available",
+      website: mainCompanyData.website_url || url,
+      location: mainCompanyData.address_formatted || "Location not available",
+      industry: "Technology", // Default to Technology as it's not provided by Harmonic
+      logo_url: mainCompanyData.logo_url,
+      stage:
+        formatFundingStage(mainCompanyData.funding_stage) || "Not available",
+      customer_type: mainCompanyData.customer_type || "Not available",
+      employees: mainCompanyData.corrected_headcount || "Not available",
+      founded: {
+        date: mainCompanyData.founding_date || null,
+        granularity: "YEAR", // Default to YEAR since we get YYYY-MM-DD from the backend
+      },
     };
 
-    // Fetch similar companies to use as competitors
-    const similarResponse = await harmonicService.getSimilarCompanies(
-      data.id,
-      5
-    );
-    let competitors: Competitor[] = [];
+    // Transform competitors data
+    const competitors: Competitor[] = competitorsList.map((comp: any) => ({
+      name: comp.name,
+      website: comp.website_url || "",
+    }));
 
-    if (similarResponse.data && !similarResponse.error) {
-      const companyPromises = similarResponse.data.results.map((companyId) =>
-        harmonicService.getCompanyById(companyId)
-      );
-
-      const companiesDetails = await Promise.all(companyPromises);
-      competitors = companiesDetails
-        .filter((response) => !response.error && response.data)
-        .map((response) => ({
-          name: response.data!.name,
-          website: response.data!.website?.url || "",
-        }));
-    }
-
-    // Generate two distinct spider datasets for visualization
-    const categories = [
-      "Traffic",
-      "Headcount",
-      "Funding",
-      "Linkedin Followers",
+    // Transform spider data from scoring
+    const spiderData: SpiderDataPoint[] = [
+      {
+        category: "Traffic",
+        value: scoringData.market_scores.market_average_scaled_web_traffic,
+      },
+      {
+        category: "Headcount",
+        value: scoringData.market_scores.market_average_scaled_headcount,
+      },
+      {
+        category: "Funding",
+        value: scoringData.market_scores.market_average_scaled_funding,
+      },
+      {
+        category: "Linkedin Followers",
+        value: scoringData.market_scores.market_average_scaled_linkedin,
+      },
     ];
 
-    const spiderData = categories.map((category) => ({
-      category,
-      value: Number((0.3 + Math.random() * 0.7).toFixed(2)), // Values between 0.3 and 1.0
-    }));
+    const marketAverageData: SpiderDataPoint[] = [
+      {
+        category: "Traffic",
+        value: scoringData.market_scores.market_average_scaled_web_traffic,
+      },
+      {
+        category: "Headcount",
+        value: scoringData.market_scores.market_average_scaled_headcount,
+      },
+      {
+        category: "Funding",
+        value: scoringData.market_scores.market_average_scaled_funding,
+      },
+      {
+        category: "Linkedin Followers",
+        value: scoringData.market_scores.market_average_scaled_linkedin,
+      },
+    ];
 
-    const marketAverageData = categories.map((category) => ({
-      category,
-      value: Number((0.2 + Math.random() * 0.6).toFixed(2)), // Values between 0.2 and 0.8
-    }));
-
-    // Generate competitor comparison data
-    const generateTimeSeriesData = (baseValue: number, volatility: number) => {
-      const months = 12;
-      const data = [];
-      let currentValue = baseValue;
-
-      for (let i = 0; i < months; i++) {
-        const date = new Date(2023, i, 1);
-        const change = (Math.random() - 0.5) * 2 * volatility;
-        currentValue = Math.max(0, currentValue + change);
-        data.push({
-          date: date.toISOString().slice(0, 7),
-          value: Number(currentValue.toFixed(2)),
-        });
-      }
-      return data;
-    };
-
-    const generateRandomColor = () => {
-      const hue = Math.floor(Math.random() * 360);
-      const saturation = Math.floor(Math.random() * 30) + 70; // 70-100%
-      const lightness = Math.floor(Math.random() * 20) + 45; // 45-65%
-      return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-    };
-
-    // Create competitor comparison data using real competitors
+    // Transform competitor comparison data
     const competitorComparison: CompetitorData[] = [
       {
         name: companyInfo.name,
         location: companyInfo.location,
-        funding: 50000000,
-        followers: generateTimeSeriesData(50000, 5000),
-        headcount: generateTimeSeriesData(500, 20),
-        traffic: generateTimeSeriesData(1000000, 100000),
-        marketShare: generateTimeSeriesData(0.35, 0.02),
-        growthRate: generateTimeSeriesData(0.25, 0.03),
+        funding: mainCompanyData.funding_total || 0,
         color: "hsl(var(--chart-1))", // Main company uses primary chart color
       },
-      ...competitors.slice(0, 4).map((competitor, index) => {
-        const multipliers = [0.7, 1.5, 0.5, 0.8]; // Different sizes for variety
-        const baseMultiplier = multipliers[index];
-
-        return {
-          name: competitor.name,
-          location: "Global", // We don't have location in the competitor data
-          funding: 50000000 * baseMultiplier,
-          followers: generateTimeSeriesData(
-            50000 * baseMultiplier,
-            5000 * baseMultiplier
-          ),
-          headcount: generateTimeSeriesData(
-            500 * baseMultiplier,
-            20 * baseMultiplier
-          ),
-          traffic: generateTimeSeriesData(
-            1000000 * baseMultiplier,
-            100000 * baseMultiplier
-          ),
-          marketShare: generateTimeSeriesData(0.35 * baseMultiplier, 0.02),
-          growthRate: generateTimeSeriesData(0.25 * (1 / baseMultiplier), 0.03), // Inverse relationship for growth
-          color: generateRandomColor(),
-        };
-      }),
+      ...competitorsList.slice(0, 4).map((competitor: any, index: number) => ({
+        name: competitor.name,
+        location: competitor.address_formatted || "Global",
+        funding: competitor.funding_total || 0,
+        color: `hsl(${120 + index * 60}, 70%, 50%)`, // Generate distinct colors
+      })),
     ];
 
     // Fetch market insights from Perplexity API
@@ -219,42 +202,64 @@ export async function GET(request: Request) {
       `http://localhost:3000/api/perplexity?query=${encodeURIComponent(url)}`
     );
 
-    if (!perplexityResponse.ok) {
-      console.error(
-        "Error fetching from Perplexity API:",
-        await perplexityResponse.text()
-      );
-      throw new Error("Failed to fetch market insights");
+    let marketInfo: MarketInfo = {
+      trends: [],
+      challenges: [],
+      size: "Market size not available",
+      growth_rate: "Growth rate not available",
+      insights: [],
+    };
+
+    if (perplexityResponse.ok) {
+      const perplexityData = await perplexityResponse.json();
+      marketInfo = {
+        trends: perplexityData.marketTrends || [],
+        challenges: perplexityData.marketChallenges || [],
+        size: perplexityData.marketSize || "Market size not available",
+        growth_rate: perplexityData.marketGrowth || "Growth rate not available",
+        insights: perplexityData.marketInsights || [],
+      };
     }
 
-    const perplexityData = await perplexityResponse.json();
+    // Transform social profiles
+    const socials: SocialProfile[] = mainCompanyData.linkedin_url
+      ? [
+          {
+            platform: "linkedin",
+            url: mainCompanyData.linkedin_url,
+          },
+        ]
+      : [];
 
-    // Transform Perplexity data to match MarketInfo interface
-    const marketInfo: MarketInfo = {
-      trends: perplexityData.marketTrends || [],
-      challenges: perplexityData.marketChallenges || [],
-      size: perplexityData.marketSize || "Market size not available",
-      growth_rate: perplexityData.marketGrowth || "Growth rate not available",
-      insights: perplexityData.marketInsights || [],
+    // Transform funding data
+    const funding: HarmonicFunding = {
+      funding_total: mainCompanyData.funding_total || 0,
+      num_funding_rounds: mainCompanyData.num_founding_rounds || 0,
+      investors:
+        mainCompanyData.investors?.map((investor: string) => ({
+          entity_urn: "",
+          name: investor,
+        })) || [],
+      last_funding_at: mainCompanyData.last_funding_at || "",
+      last_funding_type: "",
+      last_funding_total: mainCompanyData.last_funding_total || 0,
+      funding_stage: mainCompanyData.funding_stage || "",
     };
 
     return NextResponse.json({
       companyInfo,
       spiderData,
       marketAverageData,
-      socials: Object.entries(data.socials).map(([key, value]) => ({
-        platform: key,
-        url: value.url,
-      })),
-      funding: data.funding,
+      socials,
+      funding,
       competitors,
       marketInfo,
       competitorComparison,
     });
   } catch (error) {
-    console.error("Error fetching company data:", error);
+    console.error("Error fetching data:", error);
     return NextResponse.json(
-      { error: "Failed to fetch company data" },
+      { error: "Failed to fetch data" },
       { status: 500 }
     );
   }
