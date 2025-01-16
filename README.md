@@ -45,6 +45,7 @@ Then you can do:
 - npm install
 - npm run dev
 
+Let's be patient it will take 30sec approx to load the data!
 
 ### Endpoints
 
