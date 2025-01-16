@@ -87,7 +87,7 @@ export async function GET(request: Request) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ domain: url }),
+        body: JSON.stringify({ domain: "https://"+url  }),
       }
     );
     const mainCompanyData = await mainCompanyResponse.json();
@@ -100,11 +100,12 @@ export async function GET(request: Request) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ domain: url }),
+        body: JSON.stringify({ domain: "https://"+url  }),
       }
     );
     const competitorsList = await competitorsResponse.json();
 
+    console.log(competitorsList)
     // Get scoring data
     const scoringResponse = await fetch(
       "http://localhost:8000/competitors/scoring/",
@@ -113,7 +114,7 @@ export async function GET(request: Request) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ domain: url }),
+        body: JSON.stringify({ domain: "https://"+url }),
       }
     );
     const scoringData = await scoringResponse.json();

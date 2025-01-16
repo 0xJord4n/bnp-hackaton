@@ -18,7 +18,6 @@ export default function SearchResults({ results }: SearchResultsProps) {
     spiderData,
     socials,
     funding,
-    competitors,
     competitorComparison,
     marketInfo,
   } = results;
